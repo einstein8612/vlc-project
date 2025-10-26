@@ -1929,7 +1929,7 @@ void WiseChipHUD::setDestinationDistance(uint16_t SpeedNo, uint8_t Mode)
     }
   } //0
   DispNumber(S04SegIconTable, BCDcode[2]);
-  DispNumber(S05SegIconTable, BCDcode[1]);
+  DispNumber(S05SegIconTable, 10);
   DispNumber(S06SegIconTable, BCDcode[0]);
 }
 
@@ -1959,7 +1959,7 @@ void WiseChipHUD::setRadarDistance(uint16_t SpeedNo, uint8_t Mode)
     }
   } //0
   DispNumber(S07SegIconTable, BCDcode[2]);
-  DispNumber(S08SegIconTable, 10);
+  DispNumber(S08SegIconTable, BCDcode[1]);
   DispNumber(S09SegIconTable, BCDcode[0]);
 }
 
