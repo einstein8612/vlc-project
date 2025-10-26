@@ -143,6 +143,7 @@ void write_big_number_ssd1306(int number)
 void write_happy_monkey()
 {
     set_bottom_ssd1306();
+    display.display();
 
     for (int y = 0; y < 40; y++)
     {
@@ -160,6 +161,7 @@ void write_happy_monkey()
 void write_thinking_monkey()
 {
     set_bottom_ssd1306();
+    display.display();
 
     for (int y = 0; y < 40; y++)
     {
