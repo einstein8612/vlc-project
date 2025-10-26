@@ -1,9 +1,9 @@
 #include <Arduino.h>
 
-#define PD_1 A1
-#define PD_2 A2
-#define PD_3 A3
-#define PD_4 A4
+#define PD_1 A11
+#define PD_2 A10
+#define PD_3 A9
+#define PD_4 A8
 
 void setup()
 {
