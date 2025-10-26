@@ -37,6 +37,8 @@ class DataCollectGUI:
         self.ax.set_xlabel("Time (s)")
         self.ax.set_ylabel("PD Value")
         self.ax.set_title("Photodiode Values Over Time")
+        self.ax.set_xlim(0, self.sample_length)
+        self.ax.set_ylim(0, 1024)
         self.ax.legend()
         self.ax.grid(True)
 
@@ -121,7 +123,7 @@ class DataCollectGUI:
         time_axis = np.arange(total_samples) / self.fs
         for ch in range(4):
             self.lines[ch].set_data(time_axis, pd_values[:, ch])
-        self.ax.set_xlim(0, self.duration)
+        self.ax.set_xlim(0, self.sample_length)
         self.ax.set_ylim(0, 1024)
         self.ax.autoscale_view()
         self.fig.canvas.draw()
