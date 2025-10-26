@@ -12,7 +12,10 @@ int i = 0;
 
 void loop()
 {
-    write_big_number_ssd1306(i);
-    i = (i + 1) % 10000;
-    delay(10);
+    // write_big_number_ssd1306(i);
+    // i = (i + 1) % 10000;
+    // delay(10);
+
+    write_monkey();
+    for (;;) {};
 }
