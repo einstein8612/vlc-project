@@ -1959,7 +1959,7 @@ void WiseChipHUD::setRadarDistance(uint16_t SpeedNo, uint8_t Mode)
     }
   } //0
   DispNumber(S07SegIconTable, BCDcode[2]);
-  DispNumber(S08SegIconTable, BCDcode[1]);
+  DispNumber(S08SegIconTable, 10);
   DispNumber(S09SegIconTable, BCDcode[0]);
 }
 
@@ -2037,7 +2037,7 @@ void WiseChipHUD::setSpeedometer(uint8_t SpeedNo)
     return;
   }
 
-  S15_BAR(1);   //Number 1 Icon Clear
+  S15_BAR(0);   //Number 1 Icon Clear
   DispNumber(S16SegIconTable, BCDcode[1]);
   DispNumber(S17SegIconTable, BCDcode[0]);
 }
@@ -2359,6 +2359,6 @@ void WiseChipHUD::allOn(void)
   setCallIcon(3);
   tirePressureAlert(3);
   setTirePressure(88, 1);
-  setSpeedometer(188);
+  setSpeedometer(118);
   speedometerUnits(1);
 }
