@@ -1,10 +1,13 @@
 #include <Arduino.h>
 
-#define TRIGGER_PIN A0
-#define PD_1 A1
-#define PD_2 A2
-#define PD_3 A3
-#define PD_4 A4
+#include "WiseChipHUD.h"
+#include "ssd1306_utils.h"
+
+#define TRIGGER_PIN A7
+#define PD_1 A11
+#define PD_2 A10
+#define PD_3 A9
+#define PD_4 A8
 
 #define SAMPLE_LENGTH 3 // Sample length in seconds
 #define FS 1000         // Sampling frequency in Hz
@@ -18,8 +21,17 @@ bool is_trigger_pressed() {
     return trigger_value > 512; // Assuming a threshold for pressed state
 }
 
+WiseChipHUD hud;
+
 void setup()
 {
+    // Turn on transparent HUD display
+    hud.begin();
+    hud.allOn();
+    
+    setup_ssd1306();
+    write_happy_monkey();
+
     SerialUSB.begin(115200);
     while (!SerialUSB) {
         ; // wait for the USB connection to be established
@@ -58,6 +70,7 @@ void loop()
     }
 
     digitalWrite(LED_BUILTIN, HIGH);
+    write_thinking_monkey();
 
     for (int i = 0; i < TOTAL_SAMPLES; i++)
     {
@@ -82,6 +95,7 @@ void loop()
     SerialUSB.flush();
 
     digitalWrite(LED_BUILTIN, LOW);
+    write_happy_monkey();
 
     while (SerialUSB.available() > 0)
         SerialUSB.read(); // Clear the input buffer
