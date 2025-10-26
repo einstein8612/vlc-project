@@ -165,7 +165,7 @@ void write_thinking_monkey()
     {
         for (int x = 0; x < 44; x++)
         {
-            if (HAPPY_MONKEY[y][x])
+            if (THINKING_MONKEY[y][x])
                 display.drawPixel(monkey_x0 + x, monkey_y0 + y, SSD1306_WHITE);
             else
                 display.drawPixel(monkey_x0 + x, monkey_y0 + y, SSD1306_BLACK);

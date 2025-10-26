@@ -121,7 +121,8 @@ class DataCollectGUI:
         time_axis = np.arange(total_samples) / self.fs
         for ch in range(4):
             self.lines[ch].set_data(time_axis, pd_values[:, ch])
-        self.ax.relim()
+        self.ax.set_xlim(0, self.duration)
+        self.ax.set_ylim(0, 1024)
         self.ax.autoscale_view()
         self.fig.canvas.draw()
         self.fig.canvas.flush_events()
