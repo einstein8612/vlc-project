@@ -2359,6 +2359,6 @@ void WiseChipHUD::allOn(void)
   setCallIcon(3);
   tirePressureAlert(3);
   setTirePressure(88, 1);
-  setSpeedometer(118);
+  setSpeedometer(138);
   speedometerUnits(1);
 }
