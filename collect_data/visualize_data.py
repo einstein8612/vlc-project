@@ -5,10 +5,15 @@ import matplotlib.pyplot as plt
 import tkinter as tk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
+from scipy.signal import savgol_filter
+
+
 class DataViewerGUI:
-    def __init__(self, input_dir):
+    def __init__(self, input_dir, filter=False):
         self.input_dir = input_dir
-        self.data_files = sorted([name for name in os.listdir(input_dir) if name.endswith('.npy')])
+        self.data_files = sorted(
+            [name for name in os.listdir(input_dir) if name.endswith(".npy")]
+        )
         self.index = 0
         self.total = len(self.data_files)
 
@@ -19,7 +24,7 @@ class DataViewerGUI:
 
         # Create figure
         self.fig, self.ax = plt.subplots(figsize=(8, 4))
-        self.lines = [self.ax.plot([], [], label=f"PD {i+1}")[0] for i in range(4)]
+        self.lines = [self.ax.plot([], [], label=f"PD {i + 1}")[0] for i in range(4)]
         self.ax.set_xlabel("Time (s)")
         self.ax.set_ylabel("PD Value")
         self.ax.set_title("Photodiode Values Over Time")
@@ -32,24 +37,37 @@ class DataViewerGUI:
         self.canvas_widget.pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
         # Next button
-        self.next_button = tk.Button(self.root, text="NEXT", bg="green", fg="white",
-                                       font=("Arial", 16), command=self.next_clicked)
+        self.next_button = tk.Button(
+            self.root,
+            text="NEXT",
+            bg="green",
+            fg="white",
+            font=("Arial", 16),
+            command=self.next_clicked,
+        )
         self.next_button.pack(side=tk.TOP, pady=10)
 
         # Previous button
-        self.previous_button = tk.Button(self.root, text="PREVIOUS", bg="red", fg="white",
-                                       font=("Arial", 16), command=self.prev_clicked)
+        self.previous_button = tk.Button(
+            self.root,
+            text="PREVIOUS",
+            bg="red",
+            fg="white",
+            font=("Arial", 16),
+            command=self.prev_clicked,
+        )
         self.previous_button.pack(side=tk.TOP, pady=10)
 
         # Dataset counter label
-        self.count_label = tk.Label(self.root, text=f"Index: {self.index+1}/{self.total}",
-                                    font=("Arial", 14))
+        self.count_label = tk.Label(
+            self.root, text=f"Index: {self.index + 1}/{self.total}", font=("Arial", 14)
+        )
         self.count_label.pack(side=tk.TOP, pady=5)
 
         # Start acquisition loop
         self.root.after(100, self.draw)
         self.root.mainloop()
-    
+
     def draw(self):
         data_path = os.path.join(self.input_dir, self.data_files[self.index])
         data = np.load(data_path)
@@ -57,12 +75,16 @@ class DataViewerGUI:
         time_axis = np.arange(data.shape[0]) * 0.01  # Assuming 100 Hz sampling rate
 
         for i in range(4):
-            self.lines[i].set_data(time_axis, data[:, i])
+            if self.filter:
+                filtered_i = savgol_filter(data[:, i], window_length=101, polyorder=3, mode='interp')
+                self.lines[i].set_data(time_axis, filtered_i)
+            else:
+                self.lines[i].set_data(time_axis, data[:, i])
 
         self.ax.relim()
         self.ax.autoscale_view()
 
-        self.count_label.config(text=f"Index: {self.index+1}/{self.total}")
+        self.count_label.config(text=f"Index: {self.index + 1}/{self.total}")
 
         self.canvas.draw()
 
@@ -80,7 +102,9 @@ class DataViewerGUI:
         self.root.destroy()
         sys.exit(0)
 
+
 if __name__ == "__main__":
     input_dir = sys.argv[1] if len(sys.argv) > 1 else "collected_data"
+    filter = sys.argv[2].lower() == "filter" if len(sys.argv) > 2 else False
 
-    DataViewerGUI(input_dir)
+    DataViewerGUI(input_dir, filter)
