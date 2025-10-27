@@ -9,7 +9,7 @@
 #define PD_3 A9
 #define PD_4 A8
 
-#define SAMPLE_LENGTH 3 // Sample length in seconds
+#define SAMPLE_LENGTH 2 // Sample length in seconds
 #define FS 1000         // Sampling frequency in Hz
 #define TOTAL_SAMPLES (SAMPLE_LENGTH * FS)
 
