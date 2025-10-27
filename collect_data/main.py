@@ -7,8 +7,11 @@ import matplotlib.pyplot as plt
 import tkinter as tk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
+from scipy.signal import savgol_filter
+
 class DataCollectGUI:
-    def __init__(self, port, output_dir):
+    def __init__(self, port, output_dir, filter=False):
+        self.filter = filter
         self.port = port
         self.output_dir = output_dir
         self.current_data = None
@@ -122,7 +125,11 @@ class DataCollectGUI:
         # Update plot
         time_axis = np.arange(total_samples) / self.fs
         for ch in range(4):
-            self.lines[ch].set_data(time_axis, pd_values[:, ch])
+            if self.filter:
+                filtered_i = savgol_filter(pd_values[:, ch], window_length=101, polyorder=3, mode='interp')
+                self.lines[ch].set_data(time_axis, filtered_i)
+            else:
+                self.lines[ch].set_data(time_axis, pd_values[:, ch])
         self.ax.set_xlim(0, self.sample_length)
         self.ax.set_ylim(0, 1024)
         self.ax.autoscale_view()
@@ -153,4 +160,6 @@ if __name__ == "__main__":
         print("WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING")
     os.makedirs(output_dir, exist_ok=True)
 
-    DataCollectGUI(port, output_dir)
+    filter = sys.argv[3].lower() == 'filter' if len(sys.argv) > 3 else False
+
+    DataCollectGUI(port, output_dir, filter)
