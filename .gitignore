@@ -44,4 +44,8 @@
 .vscode
 .venv
 
-data/
+__pycache__/
+
+downsampled_data/
+filtered_data/
+preprocessed_data/

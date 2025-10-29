@@ -16,6 +16,7 @@ class DataViewerGUI:
         )
         self.index = 0
         self.total = len(self.data_files)
+        self.filter = filter
 
         # Setup Tkinter window
         self.root = tk.Tk()
@@ -76,7 +77,7 @@ class DataViewerGUI:
 
         for i in range(4):
             if self.filter:
-                filtered_i = savgol_filter(data[:, i], window_length=101, polyorder=3, mode='interp')
+                filtered_i = savgol_filter(data[:, i], window_length=101, polyorder=2, mode='interp')
                 self.lines[i].set_data(time_axis, filtered_i)
             else:
                 self.lines[i].set_data(time_axis, data[:, i])
