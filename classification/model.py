@@ -1,11 +1,12 @@
 import torch.nn as nn
-
+import torch
 
 class CNNLSTM(nn.Module):
     def __init__(
-        self, cnn_out_dim=32, lstm_hidden=64, num_layers=1, num_classes=10, frame_length=5, device="cpu"
+        self, cnn_out_dim=32, lstm_hidden=64, num_layers=1, num_classes=10, frame_length=5, classify=True, device="cpu"
     ):
         super().__init__()
+        self.classify = classify
         self.device = device
         self.frame_length = frame_length
 
@@ -28,13 +29,18 @@ class CNNLSTM(nn.Module):
             batch_first=True,
             bidirectional=True,
         ).to(device)
-
-        # Classifier
-        self.classifier = nn.Sequential(
+        
+        # Encoder
+        self.encoder = nn.Sequential(
             nn.Linear(lstm_hidden * 2, lstm_hidden),
             nn.ReLU(),
-            nn.Linear(lstm_hidden, num_classes),
         ).to(device)
+
+        # Classifier
+        if self.classify:
+            self.classifier = nn.Linear(lstm_hidden, num_classes).to(device)
+        else:
+            self.classifier = nn.Identity().to(device)
 
     def forward(self, x):
         B, T_total, _ = x.size()
@@ -53,5 +59,12 @@ class CNNLSTM(nn.Module):
         # LSTM over frames
         lstm_out, _ = self.lstm(cnn_feats)
         out = lstm_out[:, -1, :]  # last frame
+        out = self.encoder(out)
         logits = self.classifier(out)
         return logits
+
+    def save(self, path):
+        torch.save(self.state_dict(), path)
+
+    def load(self, path):
+        self.load_state_dict(torch.load(path, map_location=self.device))
