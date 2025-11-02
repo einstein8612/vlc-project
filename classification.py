@@ -70,10 +70,10 @@ accuracy = correct / total
 print(f"✅ Test Accuracy: {accuracy * 100:.2f}%")
 
 # Load the full dataset into memory
-test_dataset = InMemoryCNNLSTMDataset(root_dir="preprocessed_data", ignored_gesture_ids=IGNORED_GESTURE_IDS, device=DEVICE)
+test_dataset = InMemoryCNNLSTMDataset(root_dir="ambient_data", ignored_gesture_ids=IGNORED_GESTURE_IDS, device=DEVICE)
 gestures_in_test_set = np.zeros(9, dtype=int)
 
-_, test_dataset = random_split(dataset, [train_size, test_size], generator=rand_g)
+_, test_dataset = random_split(dataset, [0, 1], generator=rand_g)
 test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
 for X_test, y_test in test_loader:
@@ -87,3 +87,51 @@ for X_test, y_test in test_loader:
         gestures_in_test_set[y_test[i]] += 1
 accuracy = correct / total
 print(f"✅ Test Accuracy: {accuracy * 100:.2f}%")
+
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+model.eval()
+all_preds = []
+all_labels = []
+
+with torch.no_grad():
+    for X_test, y_test in test_loader:
+        test_preds = model(X_test)
+        _, predicted = torch.max(test_preds, dim=1)
+        all_preds.extend(predicted.cpu().numpy())
+        all_labels.extend(y_test.cpu().numpy())
+
+# Convert to NumPy arrays
+all_labels_np = np.array(all_labels)
+all_preds_np = np.array(all_preds)
+
+# Compute overall accuracy
+accuracy = np.mean(all_preds_np == all_labels_np)
+print(f"✅ Test Accuracy: {accuracy * 100:.2f}%")
+
+# ----------------------------
+# Confusion Matrix (Raw Counts)
+# ----------------------------
+cm = confusion_matrix(all_labels_np, all_preds_np)
+disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=labels)
+plt.figure(figsize=(12, 10))
+disp.plot(cmap=plt.cm.Blues, xticks_rotation=45, values_format="d")
+plt.title("Confusion Matrix (Counts) on Test Set", fontsize=20)
+
+# Increase tick label size
+plt.xticks(fontsize=14)
+plt.yticks(fontsize=14)
+plt.show()
+
+# ----------------------------
+# Normalized Confusion Matrix (Percentages)
+# ----------------------------
+cm_normalized = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]  # Normalize per true class
+disp_norm = ConfusionMatrixDisplay(confusion_matrix=cm_normalized, display_labels=labels)
+plt.figure(figsize=(12, 10))
+disp_norm.plot(cmap=plt.cm.Blues, xticks_rotation=45, values_format=".2f")
+plt.title("Normalized Confusion Matrix on Test Set", fontsize=20)
+
+# Increase tick label size
+plt.xticks(fontsize=14)
+plt.yticks(fontsize=14)
+plt.show()
