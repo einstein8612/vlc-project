@@ -22,7 +22,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from .data import batch_generator
-from utils import extract_time, random_generator, NormMinMax
+from ..utils import extract_time, random_generator, NormMinMax
 from .model import Encoder, Recovery, Generator, Discriminator, Supervisor
 
 

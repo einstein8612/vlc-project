@@ -31,12 +31,12 @@ class Options():
         self.parser.add_argument(
             '--z_dim',
             help='z or data dimension',
-            default=6,
+            default=4,
             type=int)
         self.parser.add_argument(
             '--seq_len',
             help='sequence length',
-            default=24,
+            default=500,
             type=int)
         self.parser.add_argument(
             '--module',
@@ -56,7 +56,7 @@ class Options():
         self.parser.add_argument(
             '--iteration',
             help='Training iterations (should be optimized)',
-            default=50000,
+            default=10000,
             type=int)
         self.parser.add_argument(
             '--batch_size',

@@ -32,7 +32,6 @@ class InMemoryCNNLSTMDataset(Dataset):
                 for f in os.listdir(id_path)
                 if f.endswith(".npy")
             ])
-            print(f"Loading {len(npy_files)} samples for ID '{id_name}'")
 
             for f in npy_files:
                 data = np.load(f)  # shape: (T, 4)

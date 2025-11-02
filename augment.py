@@ -1,20 +1,24 @@
-from torch import nn, optim
 import torch
 
-from timegan import TimeGAN
+from timegan_lib.options import Options
+from timegan_lib.lib.timegan import TimeGAN
 from dataset import InMemoryCNNLSTMDataset
-from torch.utils.data import DataLoader
 
-DEVICE = 'cuda'
+LOAD = "timegan_gesture_model_left_to_right.pth"
 
-dataset = InMemoryCNNLSTMDataset(root_dir="preprocessed_data", device=DEVICE)
-dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
+if not LOAD:
+    dataset = InMemoryCNNLSTMDataset(root_dir="preprocessed_data")
+    labels_tensor = torch.stack(dataset.labels)
+    selected_samples = [s for s, l in zip(dataset.samples, labels_tensor) if l == 4]
 
-timegan = TimeGAN(feature_dim=4, device=DEVICE)
-timegan.fit(dataloader, epochs=500)
+    timegan = TimeGAN(opt=Options().parse(), ori_data=selected_samples)
+    timegan.train()
 
-timegan.save("timegan_gesture_model.pth")
+    timegan.save("timegan_gesture_model_left_to_right.pth")
 
-synthetic_data = timegan.generate_synthetic(num_samples=100, seq_len=100)
+timegan = TimeGAN(opt=Options().parse())
+timegan.load(LOAD)
+
+synthetic_data = timegan.generate_synthetic(num_samples=10, seq_len=500)
 print(synthetic_data.shape)
-torch.save(synthetic_data, "synthetic_gesture_data.pt")
+torch.save(synthetic_data, "synthetic_gesture_data.pt") # Manually postprocess to .npy files

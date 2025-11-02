@@ -69,27 +69,21 @@ for X_test, y_test in test_loader:
 accuracy = correct / total
 print(f"✅ Test Accuracy: {accuracy * 100:.2f}%")
 
-# random_data = torch.randn(1, 500, 4, device=DEVICE)
-# with torch.no_grad():
-#     output = model(random_data)
-#     test_preds = torch.softmax(output, dim=1).cpu().numpy(force=True)[0]
-#     x = np.arange(len(test_preds))
+# Load the full dataset into memory
+test_dataset = InMemoryCNNLSTMDataset(root_dir="preprocessed_data", ignored_gesture_ids=IGNORED_GESTURE_IDS, device=DEVICE)
+gestures_in_test_set = np.zeros(9, dtype=int)
 
-#     plt.figure(figsize=(10,5))
-#     plt.bar(x, test_preds, alpha=0.7)
-#     plt.title("Prediction distribution on random data")
-#     plt.xlabel("Gesture ID")
-#     plt.ylabel("Probability")
-#     plt.show()
+_, test_dataset = random_split(dataset, [train_size, test_size], generator=rand_g)
+test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
-# with torch.no_grad():
-#     output = model(X_test[:1])
-#     test_preds = torch.softmax(output, dim=1).cpu().numpy(force=True)[0]
-#     x = np.arange(len(test_preds))
-
-#     plt.figure(figsize=(10,5))
-#     plt.bar(x, test_preds, alpha=0.7)
-#     plt.title(f"Prediction distribution on real test data (y={y_test[0].item()})")
-#     plt.xlabel("Gesture ID")
-#     plt.ylabel("Probability")
-#     plt.show()
+for X_test, y_test in test_loader:
+    with torch.no_grad():
+        test_preds = model(X_test)
+        _, predicted = torch.max(test_preds, dim=1)
+        total += y_test.size(0)
+        correct += (predicted == y_test).sum().item()
+    
+    for i in range(len(y_test)):
+        gestures_in_test_set[y_test[i]] += 1
+accuracy = correct / total
+print(f"✅ Test Accuracy: {accuracy * 100:.2f}%")

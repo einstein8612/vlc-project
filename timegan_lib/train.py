@@ -45,6 +45,7 @@ def train():
 
     # LOAD DATA
     ori_data = load_data(opt)
+    print(ori_data[0].shape)
 
     # LOAD MODEL
     model = TimeGAN(opt, ori_data)
