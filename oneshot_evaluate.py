@@ -13,6 +13,9 @@ rand_g = torch.Generator().manual_seed(42)
 
 # Load the full dataset into memory
 dataset = InMemoryCNNLSTMDataset(root_dir=DATA, device=DEVICE)
+labels = dataset.get_labels()
+print(labels)
+print(f"✅ Loaded dataset with {len(labels)} gesture IDs.")
 
 # 80/20 train/test split
 train_size = int(0.8 * len(dataset))
@@ -23,17 +26,17 @@ _, test_dataset = random_split(dataset, [train_size, test_size], generator=rand_
 # DataLoaders
 test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
-model = CNNLSTM(num_classes=8, classify=False, device=DEVICE)
+model = CNNLSTM(num_classes=10, classify=False, device=DEVICE)
 model.load("cnn_lstm_arcface_no_zoom_in.pth")
 
 # One-shot evaluation
-totals = torch.zeros(9, device=DEVICE)
-corrects = torch.zeros(9, device=DEVICE)
+totals = torch.zeros(len(labels), device=DEVICE)
+corrects = torch.zeros(len(labels), device=DEVICE)
 model.eval()
 
 # Gather embeddings and labels for the test set
-embeddings_done = torch.zeros(9, device=DEVICE)
-embeddings = torch.zeros((9, 64), device=DEVICE)  # assuming embedding dim is 64
+embeddings_done = torch.zeros(len(labels), device=DEVICE)
+embeddings = torch.zeros((len(labels), 64), device=DEVICE)  # assuming embedding dim is 64
 for X_test, y_test in test_loader:
     with torch.no_grad():
         test_embeddings = model(X_test)
@@ -62,7 +65,7 @@ for X_test, y_test in test_loader:
 accuracy = corrects.sum() / totals.sum()
 print(f"One-shot evaluation accuracy: {accuracy*100:.2f}%")
 
-plt.bar(range(9), (corrects / totals).cpu().numpy())
+plt.bar(range(10), (corrects / totals).cpu().numpy())
 plt.xlabel("Class")
 plt.ylabel("Accuracy")
 plt.title("One-shot Classification Accuracy per Class")

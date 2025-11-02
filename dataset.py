@@ -5,14 +5,17 @@ from torch.utils.data import Dataset
 from tqdm import tqdm
 
 class InMemoryCNNLSTMDataset(Dataset):
-    def __init__(self, root_dir, device='cpu'):
+    def __init__(self, root_dir, ignored_gesture_ids=[], device='cpu'):
         self.root_dir = root_dir
         self.samples = []
         self.labels = []
         self.device = device
+        self.ignored_gesture_ids = ignored_gesture_ids
 
         # map folder names to numeric labels
         id_folders = sorted(os.listdir(root_dir))
+        id_folders = [f for f in id_folders if f not in self.ignored_gesture_ids]
+
         self.id2label = {id_name: i for i, id_name in enumerate(id_folders)}
 
         # loop through all id folders
@@ -29,6 +32,7 @@ class InMemoryCNNLSTMDataset(Dataset):
                 for f in os.listdir(id_path)
                 if f.endswith(".npy")
             ])
+            print(f"Loading {len(npy_files)} samples for ID '{id_name}'")
 
             for f in npy_files:
                 data = np.load(f)  # shape: (T, 4)
@@ -37,6 +41,9 @@ class InMemoryCNNLSTMDataset(Dataset):
 
         print(f"✅ Loaded {len(self.samples)} samples into memory "
               f"from {len(self.id2label)} IDs.")
+        
+    def get_labels(self):
+        return self.id2label
 
     def __len__(self):
         return len(self.samples)
