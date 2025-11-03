@@ -100,7 +100,6 @@ class ClassifyGUI:
         self.current_data = pd_values
 
         processed_pd_values = np.zeros((total_samples // self.factor, 4), dtype=np.float32)
-
         # Filter PD values
         for ch in range(4):
             y = pd_values[:, ch]
@@ -108,7 +107,6 @@ class ClassifyGUI:
             processed_pd_values[:, ch] = savgol_filter(
                 y, window_length=101, polyorder=3, mode="interp"
             )
-        
         # Min-max normalization
         processed_pd_values = (processed_pd_values - np.min(processed_pd_values, axis=0)) / \
             (np.max(processed_pd_values, axis=0) - np.min(processed_pd_values, axis=0) + 1e-6)
