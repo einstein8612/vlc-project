@@ -148,7 +148,7 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train and evaluate CNN-LSTM gesture model.")
-    parser.add_argument("--data_dir", type=str, default="preprocessed_data", help="Directory of dataset")
+    parser.add_argument("--data_dir", type=str, default="dataset/preprocessed_data", help="Directory of dataset")
     parser.add_argument("--ignore_gestures", type=str, nargs="*", default=['triple_tap'], help="Gesture IDs to ignore")
     parser.add_argument("--batch_size", type=int, default=32)
     parser.add_argument("--epochs", type=int, default=10)
