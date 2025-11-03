@@ -49,3 +49,5 @@ __pycache__/
 downsampled_data/
 filtered_data/
 preprocessed_data/
+
+saved_runs
