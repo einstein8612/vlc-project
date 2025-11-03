@@ -139,7 +139,8 @@ def main(args):
         "accuracy": accuracy,
         "losses": losses,
         "confusion_matrix": cm_list,
-        "labels": labels
+        "labels": labels,
+        "test_distribution": torch.bincount(torch.tensor(y_true)).tolist()
     }
     results_path = os.path.join(save_dir, "results.json")
     with open(results_path, "w") as f:
