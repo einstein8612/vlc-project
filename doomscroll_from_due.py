@@ -36,20 +36,20 @@ class DoomscrollGUI:
         self.model = CNNLSTM(num_classes=len(self.labels), device=device).to(device)
         self.model.load(model_path)
         self.model.eval()
-        
-        # Load doomscroll module
-        start_doomscroll(mode="selenium", browser="firefox", headless=False, wait=6)
 
         # Connect to serial port
-        # try:
-        #     self.ser = serial.Serial(port, 115200, timeout=None)
-        #     print(f"Connected to {port}")
-        # except serial.SerialException as e:
-        #     print(f"Error opening serial port {port}: {e}")
-        #     sys.exit(1)
+        try:
+            self.ser = serial.Serial(port, 115200, timeout=None)
+            print(f"Connected to {port}")
+        except serial.SerialException as e:
+            print(f"Error opening serial port {port}: {e}")
+            sys.exit(1)
 
-        # # Read Arduino settings
-        # self.init_config()
+        # Read Arduino settings
+        self.init_config()
+
+        # Load doomscroll module
+        start_doomscroll(mode="selenium", browser="firefox", headless=False, wait=6)
 
         print("Starting real-time data acquisition...")
         self.run()
@@ -66,21 +66,6 @@ class DoomscrollGUI:
         )
 
     def run(self):
-        
-        time.sleep(4)
-        self.run_actions("right_to_left")
-        time.sleep(4)
-        self.run_actions("right_to_left")
-        time.sleep(4)
-        self.run_actions("double_tap")
-        time.sleep(4)
-        self.run_actions("right_to_left")
-        time.sleep(4)
-        self.run_actions("right_to_left")
-        time.sleep(4)
-        self.run_actions("right_to_left")
-        time.sleep(4)
-        
         # Read sample
         total_samples = self.sample_length * self.fs
         pd_values = np.zeros((total_samples, 4), dtype=np.float32)
@@ -134,8 +119,9 @@ class DoomscrollGUI:
                 pd_values, dtype=torch.float32, device=self.device
             ).unsqueeze(0)  # (1, T, 4)
             logits = self.model(x)
-            pred_idx = torch.argmax(logits, dim=1).item()
-            pred_conf = torch.softmax(logits, dim=1)[pred_idx].item()
+            softmax_logits = torch.softmax(logits, dim=1)[0]
+            pred_idx = torch.argmax(softmax_logits).item()
+            pred_conf = softmax_logits[pred_idx].item()
             return self.labels[pred_idx], pred_idx, pred_conf
 
     def on_close(self):

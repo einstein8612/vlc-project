@@ -1,6 +1,8 @@
 import time
 import webbrowser
 
+from selenium.webdriver.common.action_chains import ActionChains
+
 _driver = None
 _mode = None
 
@@ -13,7 +15,7 @@ def start_doomscroll(
 ):
     global _driver, _mode
     _mode = mode
-    url = "https://www.youtube.com/shorts"
+    url = "https://www.youtube.com/shorts/R2mwCdVb7lE"
 
     if mode == "native":
         webbrowser.open(url)
@@ -379,6 +381,10 @@ def _click_like_dislike(like=True):
             except Exception:
                 # fallback to JS click
                 _driver.execute_script("arguments[0].click();", el)
+            
+            actions = ActionChains(_driver)
+            actions.move_to_element_with_offset(el, 100, 0).click().perform()
+
             return True
         except NoSuchElementException:
             continue

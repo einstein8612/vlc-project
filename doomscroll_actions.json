@@ -1,5 +1,5 @@
 {
-    "confidence_threshold": 0.9,
+    "confidence_threshold": 0.5,
     "actions": {
         "scroll_up": "right_to_left",
         "scroll_down": "left_to_right",
