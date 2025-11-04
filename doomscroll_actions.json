@@ -1,0 +1,9 @@
+{
+    "confidence_threshold": 0.9,
+    "actions": {
+        "scroll_up": "right_to_left",
+        "scroll_down": "left_to_right",
+        "toggle_play": "press",
+        "like": "double_tap"
+    }
+}
